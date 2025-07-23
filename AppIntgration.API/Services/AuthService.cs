@@ -1,4 +1,6 @@
 ﻿using AppIntgration.Shard.Responses;
+using System.Security.Cryptography;
+using System.Text;
 
 
 namespace AppIntgration.Services;
@@ -6,23 +8,26 @@ namespace AppIntgration.Services;
 public class AuthService : IAuthService
 {
     private readonly Dictionary<string, DateTime> _apiKeys = new();
+    private readonly byte[] _aesKey = Encoding.UTF8.GetBytes("ThisIsASecretKeyForAES1234567890!!"); // 32 bytes for AES-256
+    private readonly byte[] _aesIV = Encoding.UTF8.GetBytes("ThisIsASecretIV!!"); // 16 bytes for AES
 
     public async Task<ApiKeyResponse> GenerateApiKeyAsync()
     {
-        await Task.Delay(100); // محاكاة عملية غير متزامنة
+        await Task.Delay(100); // Simulate async operation
 
         var apiKey = GenerateRandomKey();
+        var encryptedKey = EncryptApiKey(apiKey);
         var expiresAt = DateTime.UtcNow.AddHours(24);
 
-        // حفظ المفتاح مع تاريخ انتهاء الصلاحية
-        _apiKeys[apiKey] = expiresAt;
+        // Save the encrypted key with expiration
+        _apiKeys[encryptedKey] = expiresAt;
 
-        // تنظيف المفاتيح المنتهية الصلاحية
+        // Clean expired keys
         CleanExpiredKeys();
 
         return new ApiKeyResponse
         {
-            Data = apiKey,
+            Data = encryptedKey,
             Success = true,
             Message = "Key generated successfully",
             ExpiresAt = expiresAt
@@ -52,6 +57,34 @@ public class AuthService : IAuthService
         var random = new Random();
         return new string(Enumerable.Repeat(chars, 32)
             .Select(s => s[random.Next(s.Length)]).ToArray());
+    }
+
+    private string EncryptApiKey(string key)
+    {
+        using var aes = Aes.Create();
+        aes.Key = _aesKey;
+        aes.IV = _aesIV;
+        var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+        using var ms = new MemoryStream();
+        using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+        using (var sw = new StreamWriter(cs))
+        {
+            sw.Write(key);
+        }
+        return Convert.ToBase64String(ms.ToArray());
+    }
+
+    private string DecryptApiKey(string encryptedKey)
+    {
+        using var aes = Aes.Create();
+        aes.Key = _aesKey;
+        aes.IV = _aesIV;
+        var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+        var buffer = Convert.FromBase64String(encryptedKey);
+        using var ms = new MemoryStream(buffer);
+        using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
+        using var sr = new StreamReader(cs);
+        return sr.ReadToEnd();
     }
 
     private void CleanExpiredKeys()

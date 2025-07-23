@@ -16,7 +16,7 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    [HttpGet("key")]
+    [HttpGet("apikey")]  
     public async Task<ActionResult<ApiKeyResponse>> GetApiKey()
     {
         try

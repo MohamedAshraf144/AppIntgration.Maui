@@ -3,20 +3,15 @@ using AppIntgration.Shard.DTOs;
 using AppIntgration.Shared.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppIntgration.Maui.ViewModels
 {
-
     public partial class MainViewModel : BaseViewModel
     {
         private readonly IApiService _apiService;
 
+        // Properties موجودة أصلاً
         [ObservableProperty]
         private string selectedOption = string.Empty;
 
@@ -25,6 +20,28 @@ namespace AppIntgration.Maui.ViewModels
 
         [ObservableProperty]
         private string apiKey = string.Empty;
+
+        // Properties جديدة - تعريف يدوي
+        private string _manualApiKey = string.Empty;
+        public string ManualApiKey
+        {
+            get => _manualApiKey;
+            set => SetProperty(ref _manualApiKey, value);
+        }
+
+        private string _keyStatus = "No key loaded";
+        public string KeyStatus
+        {
+            get => _keyStatus;
+            set => SetProperty(ref _keyStatus, value);
+        }
+
+        private bool _isKeyValid = false;
+        public bool IsKeyValid
+        {
+            get => _isKeyValid;
+            set => SetProperty(ref _isKeyValid, value);
+        }
 
         public ObservableCollection<ServiceDto> Services { get; }
         public ObservableCollection<LogDto> Logs { get; }
@@ -37,6 +54,99 @@ namespace AppIntgration.Maui.ViewModels
             Title = "REST API App";
         }
 
+        // Command لاستخدام المفتاح اليدوي
+        [RelayCommand]
+        private async Task UseManualKeyAsync()
+        {
+            if (string.IsNullOrWhiteSpace(ManualApiKey))
+            {
+                StatusMessage = "Please enter a valid API key";
+                return;
+            }
+
+            ApiKey = ManualApiKey.Trim();
+            IsKeyValid = await ValidateKeyAsync(ApiKey);
+
+            if (IsKeyValid)
+            {
+                KeyStatus = "✅ Manual key is valid";
+                StatusMessage = "Manual API key applied successfully";
+            }
+            else
+            {
+                KeyStatus = "❌ Invalid API key";
+                StatusMessage = "The entered API key is invalid";
+            }
+        }
+
+        // Command لتوليد مفتاح جديد
+        [RelayCommand]
+        private async Task GenerateNewKeyAsync()
+        {
+            if (IsBusy) return;
+
+            try
+            {
+                IsBusy = true;
+                StatusMessage = "Generating new API key...";
+
+                var newKey = await _apiService.GetApiKeyAsync();
+
+                if (!string.IsNullOrEmpty(newKey))
+                {
+                    ApiKey = newKey;
+                    ManualApiKey = newKey; // عشان يظهر في الـ input
+                    IsKeyValid = true;
+                    KeyStatus = "✅ New key generated successfully";
+                    StatusMessage = "New API key generated and ready to use";
+                }
+                else
+                {
+                    KeyStatus = "❌ Failed to generate key";
+                    StatusMessage = "Failed to generate new API key";
+                    IsKeyValid = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error: {ex.Message}";
+                KeyStatus = "❌ Generation failed";
+                IsKeyValid = false;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        // Command لنسخ المفتاح
+        [RelayCommand]
+        private async Task CopyKeyAsync()
+        {
+            if (!string.IsNullOrEmpty(ApiKey))
+            {
+                await Microsoft.Maui.ApplicationModel.DataTransfer.Clipboard.SetTextAsync(ApiKey);
+                StatusMessage = "API key copied to clipboard!";
+            }
+        }
+
+        // التحقق من صحة المفتاح
+        private async Task<bool> ValidateKeyAsync(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return false;
+
+            try
+            {
+                // جرب تجيب بيانات بسيطة للتأكد من صحة المفتاح
+                var services = await _apiService.GetServicesAsync(key);
+                return services?.Any() == true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         [RelayCommand]
         private async Task LoadServicesAsync()
         {
@@ -45,22 +155,36 @@ namespace AppIntgration.Maui.ViewModels
             try
             {
                 IsBusy = true;
-                StatusMessage = "Retrieving access key...";
                 Services.Clear();
 
-                // Retrieve the key
-                var apiKey = await _apiService.GetApiKeyAsync();
-                ApiKey = apiKey ?? string.Empty;
-                if (string.IsNullOrEmpty(apiKey))
+                // استخدم المفتاح الموجود أو جيب واحد جديد
+                string currentKey = ApiKey;
+
+                if (string.IsNullOrEmpty(currentKey))
+                {
+                    StatusMessage = "Retrieving access key...";
+                    currentKey = await _apiService.GetApiKeyAsync();
+
+                    if (!string.IsNullOrEmpty(currentKey))
+                    {
+                        ApiKey = currentKey;
+                        ManualApiKey = currentKey;
+                        IsKeyValid = true;
+                        KeyStatus = "✅ Auto-generated key";
+                    }
+                }
+
+                if (string.IsNullOrEmpty(currentKey))
                 {
                     StatusMessage = "Failed to retrieve access key";
+                    KeyStatus = "❌ No valid key";
+                    IsKeyValid = false;
                     return;
                 }
 
                 StatusMessage = "Loading services...";
 
-                // Fetch service data
-                var services = await _apiService.GetServicesAsync(apiKey);
+                var services = await _apiService.GetServicesAsync(currentKey);
 
                 foreach (var service in services)
                 {
@@ -75,6 +199,8 @@ namespace AppIntgration.Maui.ViewModels
             catch (Exception ex)
             {
                 StatusMessage = $"Error: {ex.Message}";
+                IsKeyValid = false;
+                KeyStatus = "❌ Key validation failed";
             }
             finally
             {
@@ -90,20 +216,35 @@ namespace AppIntgration.Maui.ViewModels
             try
             {
                 IsBusy = true;
-                StatusMessage = "Retrieving access key...";
                 Logs.Clear();
 
-                var apiKey = await _apiService.GetApiKeyAsync();
-                ApiKey = apiKey ?? string.Empty;
-                if (string.IsNullOrEmpty(apiKey))
+                string currentKey = ApiKey;
+
+                if (string.IsNullOrEmpty(currentKey))
+                {
+                    StatusMessage = "Retrieving access key...";
+                    currentKey = await _apiService.GetApiKeyAsync();
+
+                    if (!string.IsNullOrEmpty(currentKey))
+                    {
+                        ApiKey = currentKey;
+                        ManualApiKey = currentKey;
+                        IsKeyValid = true;
+                        KeyStatus = "✅ Auto-generated key";
+                    }
+                }
+
+                if (string.IsNullOrEmpty(currentKey))
                 {
                     StatusMessage = "Failed to retrieve access key";
+                    KeyStatus = "❌ No valid key";
+                    IsKeyValid = false;
                     return;
                 }
 
                 StatusMessage = "Loading logs...";
 
-                var logs = await _apiService.GetLogsAsync(apiKey);
+                var logs = await _apiService.GetLogsAsync(currentKey);
 
                 foreach (var log in logs)
                 {
@@ -118,6 +259,8 @@ namespace AppIntgration.Maui.ViewModels
             catch (Exception ex)
             {
                 StatusMessage = $"Error: {ex.Message}";
+                IsKeyValid = false;
+                KeyStatus = "❌ Key validation failed";
             }
             finally
             {

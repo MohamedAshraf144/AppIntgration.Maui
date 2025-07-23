@@ -2,161 +2,456 @@
 <ContentPage x:Class="AppIntgration.Maui.Views.MainPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             BackgroundColor="#F8F9FA">
 
     <ScrollView>
-        <Grid Padding="20" RowSpacing="20">
+        <Grid Padding="16" RowSpacing="20">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- App Title -->
-            <Label Grid.Row="0" 
-                   Text="Welcome to the REST API App" 
-                   FontSize="24" 
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   TextColor="DarkBlue" />
+            <!-- Header Section -->
+            <Frame Grid.Row="0" 
+                   BackgroundColor="#2C3E50"
+                   CornerRadius="12"
+                   Padding="20"
+                   HasShadow="True">
+                <StackLayout>
+                    <Label Text="📊 System Monitor Dashboard" 
+                           FontSize="24" 
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center" />
+                    <Label Text="Real-time Services &amp; Logs Monitoring" 
+                           FontSize="14" 
+                           TextColor="#BDC3C7"
+                           HorizontalOptions="Center"
+                           Margin="0,5,0,0" />
+                </StackLayout>
+            </Frame>
 
-            <!-- API Key Display -->
-            <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
-                <Label Text="API Key:" FontAttributes="Bold" TextColor="DarkRed" />
-                <Label Text="{Binding ApiKey}" TextColor="DarkRed" FontAttributes="Italic" />
-            </StackLayout>
+            <!-- API Key Input Section -->
+            <Frame Grid.Row="1" 
+                   BackgroundColor="White"
+                   CornerRadius="8"
+                   Padding="16"
+                   HasShadow="True">
+                <StackLayout Spacing="12">
+                    <!-- Title -->
+                    <Label Text="🔑 API Key Configuration" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50" />
 
-            <!-- Option Buttons -->
-            <Grid Grid.Row="2" ColumnSpacing="15">
+                    <!-- Input Row -->
+                    <Grid ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="80" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Key Input -->
+                        <Border Grid.Column="0" 
+                                BackgroundColor="#F8F9FA"
+                                Stroke="#BDC3C7"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 6">
+                            <Entry x:Name="ApiKeyEntry"
+                                   Text="{Binding ManualApiKey}" 
+                                   Placeholder="Enter API Key manually..."
+                                   FontFamily="Courier"
+                                   FontSize="14"
+                                   TextColor="#2C3E50"
+                                   PlaceholderColor="#95A5A6"
+                                   BackgroundColor="Transparent"
+                                   Margin="8,0"
+                                   ReturnType="Done" />
+                        </Border>
+
+                        <!-- Use Manual Key Button -->
+                        <Button Grid.Column="1"
+                                Text="Use"
+                                Command="{Binding UseManualKeyCommand}"
+                                BackgroundColor="#3498DB"
+                                TextColor="White"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                CornerRadius="6" />
+
+                        <!-- Generate New Key Button -->
+                        <Button Grid.Column="2"
+                                Text="Generate"
+                                Command="{Binding GenerateNewKeyCommand}"
+                                BackgroundColor="#27AE60"
+                                TextColor="White"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                CornerRadius="6" />
+                    </Grid>
+
+                    <!-- Current Key Display -->
+                    <StackLayout Orientation="Horizontal" 
+                                 Spacing="8"
+                                 IsVisible="{Binding ApiKey, Converter={StaticResource StringToBoolConverter}, ConverterParameter=''}">
+                        <Label Text="Current Key:" 
+                               FontSize="12" 
+                               TextColor="#7F8C8D"
+                               VerticalOptions="Center" />
+
+                        <ScrollView Orientation="Horizontal" 
+                                    HorizontalScrollBarVisibility="Never"
+                                    HorizontalOptions="FillAndExpand">
+                            <Label Text="{Binding ApiKey}" 
+                                   FontFamily="Courier"
+                                   FontSize="11"
+                                   TextColor="#E74C3C"
+                                   VerticalOptions="Center" />
+                        </ScrollView>
+
+                        <!-- Copy Button -->
+                        <Button Text="📋"
+                                Command="{Binding CopyKeyCommand}"
+                                BackgroundColor="#95A5A6"
+                                TextColor="White"
+                                FontSize="12"
+                                WidthRequest="40"
+                                HeightRequest="30"
+                                CornerRadius="4" />
+                    </StackLayout>
+
+                    <!-- Key Status -->
+                    <Label Text="{Binding KeyStatus}" 
+                           FontSize="13" 
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           Padding="8,4">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsKeyValid}" Value="True">
+                                <Setter Property="TextColor" Value="#27AE60" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsKeyValid}" Value="False">
+                                <Setter Property="TextColor" Value="#E74C3C" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </StackLayout>
+            </Frame>
+
+            <!-- Action Buttons -->
+            <Grid Grid.Row="2" ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="60" />
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0"
-                        Text="📋 Services"
-                        Command="{Binding LoadServicesCommand}"
-                        BackgroundColor="LightBlue"
-                        TextColor="DarkBlue"
-                        FontAttributes="Bold" />
+                <!-- Services Button -->
+                <Frame Grid.Column="0" 
+                       BackgroundColor="#3498DB"
+                       CornerRadius="8"
+                       Padding="0"
+                       HasShadow="True">
+                    <Button Text="🖥️ Services"
+                            Command="{Binding LoadServicesCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="16" />
+                </Frame>
 
-                <Button Grid.Column="1"
-                        Text="📝 Logs"
-                        Command="{Binding LoadLogsCommand}"
-                        BackgroundColor="LightGreen"
-                        TextColor="DarkGreen"
-                        FontAttributes="Bold" />
+                <!-- Logs Button -->
+                <Frame Grid.Column="1" 
+                       BackgroundColor="#27AE60"
+                       CornerRadius="8"
+                       Padding="0"
+                       HasShadow="True">
+                    <Button Text="📝 Logs"
+                            Command="{Binding LoadLogsCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="16" />
+                </Frame>
 
-                <Button Grid.Column="2"
-                        Text="🔄"
-                        Command="{Binding RefreshDataCommand}"
-                        BackgroundColor="Orange"
-                        TextColor="White"
-                        WidthRequest="50" />
+                <!-- Refresh Button -->
+                <Frame Grid.Column="2" 
+                       BackgroundColor="#F39C12"
+                       CornerRadius="8"
+                       Padding="0"
+                       HasShadow="True">
+                    <Button Text="🔄"
+                            Command="{Binding RefreshDataCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="White"
+                            FontSize="20" />
+                </Frame>
             </Grid>
 
-            <!-- Loading bar and status message -->
-            <StackLayout Grid.Row="3" Spacing="10">
-                <ActivityIndicator IsVisible="{Binding IsBusy}" 
-                                   IsRunning="{Binding IsBusy}" 
-                                   Color="Blue"
-                                   HeightRequest="30" />
-                <Label Text="{Binding StatusMessage}" 
-                       HorizontalOptions="Center" 
-                       FontSize="16" 
-                       TextColor="Gray"
-                       FontAttributes="Italic" />
-            </StackLayout>
+            <!-- Status Section -->
+            <Frame Grid.Row="3" 
+                   BackgroundColor="White"
+                   CornerRadius="8"
+                   Padding="16"
+                   HasShadow="True"
+                   IsVisible="{Binding IsBusy}">
+                <StackLayout Orientation="Horizontal" Spacing="15">
+                    <ActivityIndicator IsVisible="{Binding IsBusy}" 
+                                       IsRunning="{Binding IsBusy}" 
+                                       Color="#3498DB"
+                                       VerticalOptions="Center" />
+                    <Label Text="{Binding StatusMessage}" 
+                           FontSize="16" 
+                           TextColor="#7F8C8D"
+                           FontAttributes="Italic"
+                           VerticalOptions="Center" />
+                </StackLayout>
+            </Frame>
 
-            <!-- Data display area -->
-            <StackLayout Grid.Row="4" Spacing="10">
+            <!-- Data Display Area -->
+            <StackLayout Grid.Row="4" Spacing="16">
 
-                <!-- Services display -->
-                <Label Text="📋 Services List:" 
-                       FontSize="18" 
-                       FontAttributes="Bold"
-                       TextColor="DarkBlue"
-                       IsVisible="{Binding SelectedOption, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Services}" />
+                <!-- Services Header -->
+                <Frame BackgroundColor="#ECF0F1"
+                       CornerRadius="8"
+                       Padding="12"
+                       HasShadow="False"
+                       IsVisible="{Binding SelectedOption, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Services}">
+                    <Label Text="🖥️ System Services Status" 
+                           FontSize="20" 
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50"
+                           HorizontalOptions="Center" />
+                </Frame>
 
+                <!-- Services List -->
                 <CollectionView ItemsSource="{Binding Services}" 
                                 IsVisible="{Binding SelectedOption, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Services}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Padding="15" 
-                                  BackgroundColor="AliceBlue" 
-                                  Margin="0,5">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
+                            <Frame BackgroundColor="White" 
+                                   CornerRadius="12"
+                                   Padding="16" 
+                                   Margin="0,4"
+                                   HasShadow="True">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                                <Label Grid.Row="0" 
-                                       Text="{Binding Name}" 
-                                       FontAttributes="Bold" 
-                                       FontSize="18"
-                                       TextColor="DarkBlue" />
-                                <Label Grid.Row="1" 
-                                       Text="{Binding Status}" 
-                                       FontSize="14" 
-                                       TextColor="Green"
-                                       FontAttributes="Italic" />
-                                <Label Grid.Row="2" 
-                                       Text="{Binding Description}" 
-                                       FontSize="12" 
-                                       TextColor="Gray" />
-                                <Label Grid.Row="3" 
-                                       Text="{Binding CreatedAt, StringFormat='Created at: {0:yyyy-MM-dd}'}" 
-                                       FontSize="10" 
-                                       TextColor="DarkGray" />
-                            </Grid>
+                                    <!-- Service Name -->
+                                    <Label Grid.Row="0" Grid.Column="0"
+                                           Text="{Binding Name}" 
+                                           FontAttributes="Bold" 
+                                           FontSize="18"
+                                           TextColor="#2C3E50" />
+
+                                    <!-- Status Badge -->
+                                    <Frame Grid.Row="0" Grid.Column="1"
+                                           CornerRadius="12"
+                                           Padding="8,4"
+                                           HasShadow="False"
+                                           VerticalOptions="Center">
+                                        <Frame.Triggers>
+                                            <DataTrigger TargetType="Frame" Binding="{Binding Status}" Value="Active">
+                                                <Setter Property="BackgroundColor" Value="#2ECC71" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Frame" Binding="{Binding Status}" Value="Error">
+                                                <Setter Property="BackgroundColor" Value="#E74C3C" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Frame" Binding="{Binding Status}" Value="Maintenance">
+                                                <Setter Property="BackgroundColor" Value="#F39C12" />
+                                            </DataTrigger>
+                                        </Frame.Triggers>
+                                        <Label Text="{Binding Status}" 
+                                               FontSize="12" 
+                                               TextColor="White"
+                                               FontAttributes="Bold" />
+                                    </Frame>
+
+                                    <!-- Description -->
+                                    <Label Grid.Row="1" Grid.ColumnSpan="2"
+                                           Text="{Binding Description}" 
+                                           FontSize="14" 
+                                           TextColor="#7F8C8D"
+                                           Margin="0,8,0,0" />
+
+                                    <!-- Separator -->
+                                    <BoxView Grid.Row="2" Grid.ColumnSpan="2"
+                                             HeightRequest="1"
+                                             BackgroundColor="#ECF0F1"
+                                             Margin="0,8,0,8" />
+
+                                    <!-- Created Date -->
+                                    <Label Grid.Row="3" Grid.ColumnSpan="2"
+                                           Text="{Binding CreatedAt, StringFormat='📅 Created: {0:MMM dd, yyyy}'}" 
+                                           FontSize="12" 
+                                           TextColor="#95A5A6" />
+                                </Grid>
+                            </Frame>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <!-- Logs display -->
-                <Label Text="📝 Logs List:" 
-                       FontSize="18" 
-                       FontAttributes="Bold"
-                       TextColor="DarkGreen"
-                       IsVisible="{Binding SelectedOption, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Logs}" />
+                <!-- Logs Header -->
+                <Frame BackgroundColor="#ECF0F1"
+                       CornerRadius="8"
+                       Padding="12"
+                       HasShadow="False"
+                       IsVisible="{Binding SelectedOption, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Logs}">
+                    <Label Text="📝 System Logs Monitor" 
+                           FontSize="20" 
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50"
+                           HorizontalOptions="Center" />
+                </Frame>
 
+                <!-- Logs List -->
                 <CollectionView ItemsSource="{Binding Logs}" 
                                 IsVisible="{Binding SelectedOption, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Logs}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Padding="15" 
-                                  BackgroundColor="Honeydew" 
-                                  Margin="0,5">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
+                            <Frame BackgroundColor="White" 
+                                   CornerRadius="8"
+                                   Padding="12" 
+                                   Margin="0,3"
+                                   HasShadow="True">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                                <Label Grid.Row="0" 
-                                       Text="{Binding Timestamp, StringFormat='{0:yyyy-MM-dd HH:mm:ss}'}" 
-                                       FontSize="12" 
-                                       TextColor="DarkGray" />
-                                <Label Grid.Row="1" 
-                                       Text="{Binding Level}" 
-                                       FontAttributes="Bold" 
-                                       FontSize="16"
-                                       TextColor="DarkRed" />
-                                <Label Grid.Row="2" 
-                                       Text="{Binding Message}" 
-                                       FontSize="14"
-                                       TextColor="Black" />
-                                <Label Grid.Row="3" 
-                                       Text="{Binding Source, StringFormat='Source: {0}'}" 
-                                       FontSize="12" 
-                                       TextColor="Blue"
-                                       FontAttributes="Italic" />
-                            </Grid>
+                                    <!-- Log Level Icon -->
+                                    <Frame Grid.Row="0" Grid.Column="0"
+                                           CornerRadius="15"
+                                           Padding="6"
+                                           HasShadow="False"
+                                           VerticalOptions="Start"
+                                           Margin="0,0,8,0">
+                                        <Frame.Triggers>
+                                            <DataTrigger TargetType="Frame" Binding="{Binding Level}" Value="Info">
+                                                <Setter Property="BackgroundColor" Value="#3498DB" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Frame" Binding="{Binding Level}" Value="Warning">
+                                                <Setter Property="BackgroundColor" Value="#F39C12" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Frame" Binding="{Binding Level}" Value="Error">
+                                                <Setter Property="BackgroundColor" Value="#E74C3C" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Frame" Binding="{Binding Level}" Value="Success">
+                                                <Setter Property="BackgroundColor" Value="#27AE60" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Frame" Binding="{Binding Level}" Value="Debug">
+                                                <Setter Property="BackgroundColor" Value="#9B59B6" />
+                                            </DataTrigger>
+                                        </Frame.Triggers>
+                                        <Label FontSize="12" 
+                                               TextColor="White"
+                                               FontAttributes="Bold"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Level}" Value="Info">
+                                                    <Setter Property="Text" Value="ℹ️" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Level}" Value="Warning">
+                                                    <Setter Property="Text" Value="⚠️" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Level}" Value="Error">
+                                                    <Setter Property="Text" Value="❌" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Level}" Value="Success">
+                                                    <Setter Property="Text" Value="✅" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Level}" Value="Debug">
+                                                    <Setter Property="Text" Value="🔧" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Frame>
+
+                                    <!-- Timestamp -->
+                                    <Label Grid.Row="0" Grid.Column="2"
+                                           Text="{Binding Timestamp, StringFormat='{0:HH:mm:ss}'}" 
+                                           FontSize="11" 
+                                           TextColor="#95A5A6"
+                                           VerticalOptions="Start" />
+
+                                    <!-- Log Level Text -->
+                                    <Label Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding Level}" 
+                                           FontAttributes="Bold" 
+                                           FontSize="14"
+                                           VerticalOptions="Start">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Level}" Value="Info">
+                                                <Setter Property="TextColor" Value="#3498DB" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Level}" Value="Warning">
+                                                <Setter Property="TextColor" Value="#F39C12" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Level}" Value="Error">
+                                                <Setter Property="TextColor" Value="#E74C3C" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Level}" Value="Success">
+                                                <Setter Property="TextColor" Value="#27AE60" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Level}" Value="Debug">
+                                                <Setter Property="TextColor" Value="#9B59B6" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+                                    <!-- Message -->
+                                    <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                           Text="{Binding Message}" 
+                                           FontSize="13"
+                                           TextColor="#2C3E50"
+                                           Margin="0,4,0,0" />
+
+                                    <!-- Source -->
+                                    <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                                           Text="{Binding Source, StringFormat='📍 {0}'}" 
+                                           FontSize="11" 
+                                           TextColor="#7F8C8D"
+                                           FontAttributes="Italic"
+                                           Margin="0,4,0,0" />
+
+                                    <!-- Exception (if exists) -->
+                                    <Frame Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                                           BackgroundColor="#FADBD8"
+                                           CornerRadius="4"
+                                           Padding="8"
+                                           HasShadow="False"
+                                           Margin="0,4,0,0"
+                                           IsVisible="{Binding Exception, Converter={StaticResource StringToBoolConverter}, ConverterParameter=''}">
+                                        <Label Text="{Binding Exception}" 
+                                               FontSize="10" 
+                                               TextColor="#C0392B"
+                                               FontFamily="Courier" />
+                                    </Frame>
+                                </Grid>
+                            </Frame>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>

@@ -22,7 +22,7 @@ namespace AppIntgration.API.Services
 
         public async Task<IEnumerable<ServiceDto>> GetServicesAsync()
         {
-            await Task.Delay(200); // محاكاة تأخير قاعدة البيانات
+            await Task.Delay(200); // Simulate database delay
             return _services;
         }
 
@@ -38,7 +38,7 @@ namespace AppIntgration.API.Services
 
             var query = _logs.AsQueryable();
 
-            // تطبيق الفلاتر
+            // Apply filters
             if (!string.IsNullOrEmpty(request.Level))
                 query = query.Where(l => l.Level == request.Level);
 
@@ -53,7 +53,7 @@ namespace AppIntgration.API.Services
 
             var totalCount = query.Count();
 
-            // ترتيب وصفحات
+            // Paging and sorting
             var logs = query
                 .OrderByDescending(l => l.Timestamp)
                 .Skip((request.Page - 1) * request.Size)
@@ -86,11 +86,11 @@ namespace AppIntgration.API.Services
         {
             return new List<ServiceDto>
         {
-            new() { Id = 1, Name = "خدمة الويب الرئيسية", Status = AppIntgration.Shard.Constants.ApiConstants.ServiceStatuses.Active, Description = "خدمة API الأساسية للتطبيق", CreatedAt = DateTime.UtcNow.AddDays(-30) },
-            new() { Id = 2, Name = "قاعدة البيانات", Status = AppIntgration.Shard.Constants.ApiConstants.ServiceStatuses.Active, Description = "قاعدة البيانات المركزية", CreatedAt = DateTime.UtcNow.AddDays(-45) },
-            new() { Id = 3, Name = "خدمة التخزين", Status = AppIntgration.Shard.Constants.ApiConstants.ServiceStatuses.Maintenance, Description = "تخزين الملفات والوثائق", CreatedAt = DateTime.UtcNow.AddDays(-20) },
-            new() { Id = 4, Name = "خدمة الإشعارات", Status = AppIntgration.Shard.Constants.ApiConstants.ServiceStatuses.Active, Description = "إرسال الإشعارات للمستخدمين", CreatedAt = DateTime.UtcNow.AddDays(-15) },
-            new() { Id = 5, Name = "خدمة النسخ الاحتياطي", Status = AppIntgration.Shard.Constants.ApiConstants.ServiceStatuses.Error, Description = "نسخ احتياطي للبيانات", CreatedAt = DateTime.UtcNow.AddDays(-10) }
+            new() { Id = 1, Name = "Main Web Service", Status = AppIntgration.Shard.Constants.ApiConstants.ServiceStatuses.Active, Description = "Core API service for the app", CreatedAt = DateTime.UtcNow.AddDays(-30) },
+            new() { Id = 2, Name = "Database", Status = AppIntgration.Shard.Constants.ApiConstants.ServiceStatuses.Active, Description = "Central database", CreatedAt = DateTime.UtcNow.AddDays(-45) },
+            new() { Id = 3, Name = "Storage Service", Status = AppIntgration.Shard.Constants.ApiConstants.ServiceStatuses.Maintenance, Description = "File and document storage", CreatedAt = DateTime.UtcNow.AddDays(-20) },
+            new() { Id = 4, Name = "Notification Service", Status = AppIntgration.Shard.Constants.ApiConstants.ServiceStatuses.Active, Description = "Send notifications to users", CreatedAt = DateTime.UtcNow.AddDays(-15) },
+            new() { Id = 5, Name = "Backup Service", Status = AppIntgration.Shard.Constants.ApiConstants.ServiceStatuses.Error, Description = "Data backup", CreatedAt = DateTime.UtcNow.AddDays(-10) }
         };
         }
 
@@ -98,30 +98,37 @@ namespace AppIntgration.API.Services
         {
             var random = new Random();
             var levels = new[] { AppIntgration.Shard.Constants.ApiConstants.LogLevels.Info, AppIntgration.Shard.Constants.ApiConstants.LogLevels.Warning, AppIntgration.Shard.Constants.ApiConstants.LogLevels.Error, AppIntgration.Shard.Constants.ApiConstants.LogLevels.Success };
-            var sources = new[] { "تطبيق الويب", "قاعدة البيانات", "خدمة API", "نظام المصادقة", "خدمة التخزين" };
+            var sources = new[] { "Web App", "Database", "API Service", "Authentication System", "Storage Service" };
             var messages = new[]
             {
-            "تم تسجيل دخول مستخدم جديد بنجاح",
-            "فشل في الاتصال بقاعدة البيانات",
-            "تم إنشاء نسخة احتياطية بنجاح",
-            "تحذير: استهلاك ذاكرة عالي",
-            "تم حفظ البيانات بنجاح",
-            "خطأ في معالجة الطلب",
-            "تم تحديث إعدادات النظام",
-            "فشل في إرسال الإشعار",
-            "تم تنفيذ عملية الصيانة",
-            "تحذير: مساحة التخزين منخفضة"
+            "New user login successful",
+            "Database connection failed",
+            "Backup created successfully",
+            "Warning: High memory usage",
+            "Data saved successfully",
+            "Error processing request",
+            "System settings updated",
+            "Failed to send notification",
+            "Maintenance operation completed",
+            "Warning: Low storage space"
         };
 
             return Enumerable.Range(1, 500).Select(i => new LogDto
             {
                 Id = i,
-                Timestamp = DateTime.UtcNow.AddMinutes(-random.Next(1, 10080)), // آخر أسبوع
+                Timestamp = DateTime.UtcNow.AddMinutes(-random.Next(1, 10080)), // Last week
                 Level = levels[random.Next(levels.Length)],
                 Message = messages[random.Next(messages.Length)],
                 Source = sources[random.Next(sources.Length)],
-                Exception = random.Next(10) < 2 ? "System.Exception: خطأ تفصيلي هنا" : null
+                Exception = random.Next(10) < 2 ? "System.Exception: Detailed error here" : null
             }).ToList();
+        }
+
+        // إضافة Dispose method لحل مشكلة IDisposable
+        public void Dispose()
+        {
+            // مفيش حاجة محتاجة cleanup في الـ DataService العادي
+            // بس لازم نعمل implement للـ interface
         }
     }
 }
