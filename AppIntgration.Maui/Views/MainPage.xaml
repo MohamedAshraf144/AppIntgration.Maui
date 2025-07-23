@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="AppIntgration.Maui.Views.MainPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <Grid Padding="20" RowSpacing="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- App Title -->
+            <Label Grid.Row="0" 
+                   Text="Welcome to the REST API App" 
+                   FontSize="24" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="DarkBlue" />
+
+            <!-- API Key Display -->
+            <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
+                <Label Text="API Key:" FontAttributes="Bold" TextColor="DarkRed" />
+                <Label Text="{Binding ApiKey}" TextColor="DarkRed" FontAttributes="Italic" />
+            </StackLayout>
+
+            <!-- Option Buttons -->
+            <Grid Grid.Row="2" ColumnSpacing="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Text="📋 Services"
+                        Command="{Binding LoadServicesCommand}"
+                        BackgroundColor="LightBlue"
+                        TextColor="DarkBlue"
+                        FontAttributes="Bold" />
+
+                <Button Grid.Column="1"
+                        Text="📝 Logs"
+                        Command="{Binding LoadLogsCommand}"
+                        BackgroundColor="LightGreen"
+                        TextColor="DarkGreen"
+                        FontAttributes="Bold" />
+
+                <Button Grid.Column="2"
+                        Text="🔄"
+                        Command="{Binding RefreshDataCommand}"
+                        BackgroundColor="Orange"
+                        TextColor="White"
+                        WidthRequest="50" />
+            </Grid>
+
+            <!-- Loading bar and status message -->
+            <StackLayout Grid.Row="3" Spacing="10">
+                <ActivityIndicator IsVisible="{Binding IsBusy}" 
+                                   IsRunning="{Binding IsBusy}" 
+                                   Color="Blue"
+                                   HeightRequest="30" />
+                <Label Text="{Binding StatusMessage}" 
+                       HorizontalOptions="Center" 
+                       FontSize="16" 
+                       TextColor="Gray"
+                       FontAttributes="Italic" />
+            </StackLayout>
+
+            <!-- Data display area -->
+            <StackLayout Grid.Row="4" Spacing="10">
+
+                <!-- Services display -->
+                <Label Text="📋 Services List:" 
+                       FontSize="18" 
+                       FontAttributes="Bold"
+                       TextColor="DarkBlue"
+                       IsVisible="{Binding SelectedOption, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Services}" />
+
+                <CollectionView ItemsSource="{Binding Services}" 
+                                IsVisible="{Binding SelectedOption, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Services}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="15" 
+                                  BackgroundColor="AliceBlue" 
+                                  Margin="0,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Row="0" 
+                                       Text="{Binding Name}" 
+                                       FontAttributes="Bold" 
+                                       FontSize="18"
+                                       TextColor="DarkBlue" />
+                                <Label Grid.Row="1" 
+                                       Text="{Binding Status}" 
+                                       FontSize="14" 
+                                       TextColor="Green"
+                                       FontAttributes="Italic" />
+                                <Label Grid.Row="2" 
+                                       Text="{Binding Description}" 
+                                       FontSize="12" 
+                                       TextColor="Gray" />
+                                <Label Grid.Row="3" 
+                                       Text="{Binding CreatedAt, StringFormat='Created at: {0:yyyy-MM-dd}'}" 
+                                       FontSize="10" 
+                                       TextColor="DarkGray" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Logs display -->
+                <Label Text="📝 Logs List:" 
+                       FontSize="18" 
+                       FontAttributes="Bold"
+                       TextColor="DarkGreen"
+                       IsVisible="{Binding SelectedOption, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Logs}" />
+
+                <CollectionView ItemsSource="{Binding Logs}" 
+                                IsVisible="{Binding SelectedOption, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Logs}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="15" 
+                                  BackgroundColor="Honeydew" 
+                                  Margin="0,5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Row="0" 
+                                       Text="{Binding Timestamp, StringFormat='{0:yyyy-MM-dd HH:mm:ss}'}" 
+                                       FontSize="12" 
+                                       TextColor="DarkGray" />
+                                <Label Grid.Row="1" 
+                                       Text="{Binding Level}" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"
+                                       TextColor="DarkRed" />
+                                <Label Grid.Row="2" 
+                                       Text="{Binding Message}" 
+                                       FontSize="14"
+                                       TextColor="Black" />
+                                <Label Grid.Row="3" 
+                                       Text="{Binding Source, StringFormat='Source: {0}'}" 
+                                       FontSize="12" 
+                                       TextColor="Blue"
+                                       FontAttributes="Italic" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </StackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>
