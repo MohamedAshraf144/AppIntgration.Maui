@@ -1,13 +1,11 @@
 ﻿using AppIntgration.Shard.DTOs;
 using AppIntgration.Shard.Responses;
 using AppIntgration.Shared.Models;
-using Elastic.Apm.Api;
 using System.Text.Json;
 using AppIntgration.Shard.Constants;
 
 namespace AppIntgration.Maui.Services
 {
-
     public interface IApiService
     {
         Task<string?> GetApiKeyAsync();
@@ -19,8 +17,10 @@ namespace AppIntgration.Maui.Services
     {
         private readonly HttpClient _httpClient;
 
-        // ⚠️ Set the server address here
-        private const string API_BASE_URL = "https://localhost:7001"; // Change this address
+        // ✅ Fixed: Correct API URL
+        private const string API_BASE_URL = "https://localhost:7039"; // Fixed port number!
+        //private const string API_BASE_URL = "http://192.168.1.113:5176";
+
 
         public ApiService()
         {
@@ -37,7 +37,7 @@ namespace AppIntgration.Maui.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync(AppIntgration.Shard.Constants.ApiConstants.Endpoints.GetApiKey);
+                var response = await _httpClient.GetAsync(ApiConstants.Endpoints.GetApiKey);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -48,11 +48,17 @@ namespace AppIntgration.Maui.Services
                     return apiResponse?.Success == true ? apiResponse.Data : null;
                 }
 
+                // 🔍 Add debugging info
+                System.Diagnostics.Debug.WriteLine($"API Key request failed: {response.StatusCode}");
+                var errorContent = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine($"Error content: {errorContent}");
+
                 return null;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error retrieving key: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"API URL: {API_BASE_URL}");
                 return null;
             }
         }
@@ -64,7 +70,7 @@ namespace AppIntgration.Maui.Services
                 _httpClient.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
-                var response = await _httpClient.GetAsync(AppIntgration.Shard.Constants.ApiConstants.Endpoints.GetServices);
+                var response = await _httpClient.GetAsync(ApiConstants.Endpoints.GetServices);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -77,6 +83,7 @@ namespace AppIntgration.Maui.Services
                         : new List<ServiceDto>();
                 }
 
+                System.Diagnostics.Debug.WriteLine($"Services request failed: {response.StatusCode}");
                 return new List<ServiceDto>();
             }
             catch (Exception ex)
@@ -93,7 +100,7 @@ namespace AppIntgration.Maui.Services
                 _httpClient.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
-                var response = await _httpClient.GetAsync($"{AppIntgration.Shard.Constants.ApiConstants.Endpoints.GetLogs}?page=1&size=50");
+                var response = await _httpClient.GetAsync($"{ApiConstants.Endpoints.GetLogs}?page=1&size=50");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -106,6 +113,7 @@ namespace AppIntgration.Maui.Services
                         : new List<LogDto>();
                 }
 
+                System.Diagnostics.Debug.WriteLine($"Logs request failed: {response.StatusCode}");
                 return new List<LogDto>();
             }
             catch (Exception ex)

@@ -1,9 +1,8 @@
 ﻿using AppIntgration.Shard.Responses;
-using Microsoft.AspNetCore.Mvc;
-using AppIntgration.Shard;
 using AppIntgration.Services;
 using AppIntgration.API.Services;
 using AppIntgration.Shared.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AppIntgration.Controllers;
 
@@ -12,15 +11,23 @@ namespace AppIntgration.Controllers;
 public class ServicesController : ControllerBase
 {
     private readonly IDataService _dataService;
+    private readonly IAuthService _authService;
 
-    public ServicesController(IDataService dataService)
+    public ServicesController(IDataService dataService, IAuthService authService)
     {
         _dataService = dataService;
+        _authService = authService;
     }
 
     [HttpGet]
     public async Task<ActionResult<ApiResponse<IEnumerable<ServiceDto>>>> GetServices()
     {
+        // تحقق من المفتاح
+        if (!await IsValidRequest())
+        {
+            return Unauthorized(new { message = "Invalid or missing API key" });
+        }
+
         try
         {
             var services = await _dataService.GetServicesAsync();
@@ -28,7 +35,7 @@ public class ServicesController : ControllerBase
             {
                 Data = services,
                 Success = true,
-                Message = $"تم جلب {services.Count()} خدمة بنجاح"
+                Message = $"Retrieved {services.Count()} services successfully"
             });
         }
         catch (Exception ex)
@@ -44,6 +51,11 @@ public class ServicesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ApiResponse<ServiceDto>>> GetService(int id)
     {
+        if (!await IsValidRequest())
+        {
+            return Unauthorized(new { message = "Invalid or missing API key" });
+        }
+
         try
         {
             var service = await _dataService.GetServiceByIdAsync(id);
@@ -71,5 +83,17 @@ public class ServicesController : ControllerBase
                 Message = ex.Message
             });
         }
+    }
+
+    // دالة مساعدة للتحقق من المفتاح
+    private async Task<bool> IsValidRequest()
+    {
+        var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+
+        if (authHeader == null || !authHeader.StartsWith("Bearer "))
+            return false;
+
+        var token = authHeader.Substring("Bearer ".Length).Trim();
+        return await _authService.ValidateApiKeyAsync(token);
     }
 }

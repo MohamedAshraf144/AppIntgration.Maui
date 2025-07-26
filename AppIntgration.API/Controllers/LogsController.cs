@@ -1,8 +1,8 @@
 ﻿using AppIntgration.Shard.DTOs;
 using AppIntgration.Shard.Requests;
 using AppIntgration.Shard.Responses;
-using AppIntgration.Shard.Constants;
 using AppIntgration.Shared.Models;
+using AppIntgration.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppIntgration.API.Controllers;
@@ -11,18 +11,25 @@ namespace AppIntgration.API.Controllers;
 [Route("api/[controller]")]
 public class LogsController : ControllerBase
 {
-    [HttpGet]
-    public ActionResult<PaginatedResponse<LogDto>> GetLogs([FromQuery] LogsRequest request)
+    private readonly IAuthService _authService;
+
+    public LogsController(IAuthService authService)
     {
-        // Validate API key
-        if (!ValidateApiKey())
+        _authService = authService;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<PaginatedResponse<LogDto>>> GetLogs([FromQuery] LogsRequest request)
+    {
+        // تحقق من المفتاح
+        if (!await IsValidRequest())
         {
-            return Unauthorized("Valid API key required");
+            return Unauthorized(new { message = "Invalid or missing API key" });
         }
 
-        // Generate mock log data
+        // توليد بيانات وهمية
         var random = new Random();
-        var levels = new[] { ApiConstants.LogLevels.Info, ApiConstants.LogLevels.Warning, ApiConstants.LogLevels.Error, ApiConstants.LogLevels.Success };
+        var levels = new[] { "Info", "Warning", "Error", "Success" };
         var sources = new[] { "Web Application", "Database", "API Service", "Authentication" };
         var messages = new[]
         {
@@ -57,13 +64,14 @@ public class LogsController : ControllerBase
         });
     }
 
-    private bool ValidateApiKey()
+    private async Task<bool> IsValidRequest()
     {
         var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+
         if (authHeader == null || !authHeader.StartsWith("Bearer "))
             return false;
 
         var token = authHeader.Substring("Bearer ".Length).Trim();
-        return !string.IsNullOrEmpty(token);
+        return await _authService.ValidateApiKeyAsync(token);
     }
 }

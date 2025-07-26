@@ -1,4 +1,38 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="456" height="456" viewBox="0 0 456 456" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <rect x="0" y="0" width="456" height="456" fill="#512BD4" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="456" height="456" viewBox="0 0 456 456" xmlns="http://www.w3.org/2000/svg">
+	<defs>
+		<!-- تدرج الخلفية -->
+		<linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+			<stop offset="0%" style="stop-color:#667eea"/>
+			<stop offset="100%" style="stop-color:#764ba2"/>
+		</linearGradient>
+	</defs>
+
+	<!-- الخلفية -->
+	<rect width="456" height="456" fill="url(#bg)" rx="100"/>
+
+	<!-- الشاشة -->
+	<rect x="78" y="128" width="300" height="200" fill="white" rx="16" opacity="0.95"/>
+	<rect x="88" y="138" width="280" height="160" fill="#2c3e50" rx="8"/>
+
+	<!-- مؤشرات الحالة -->
+	<circle cx="128" cy="178" r="12" fill="#27ae60"/>
+	<circle cx="178" cy="178" r="12" fill="#f39c12"/>
+	<circle cx="228" cy="178" r="12" fill="#e74c3c"/>
+	<circle cx="278" cy="178" r="12" fill="#3498db"/>
+
+	<!-- الرسم البياني -->
+	<polyline points="108,258 148,228 188,268 228,238 268,218 308,248 348,208"
+              fill="none" stroke="#27ae60" stroke-width="6" stroke-linecap="round"/>
+
+	<!-- أشرطة البيانات -->
+	<rect x="108" y="278" width="40" height="8" fill="#3498db" rx="4"/>
+	<rect x="158" y="278" width="60" height="8" fill="#27ae60" rx="4"/>
+	<rect x="228" y="278" width="30" height="8" fill="#f39c12" rx="4"/>
+	<rect x="268" y="278" width="50" height="8" fill="#e74c3c" rx="4"/>
+
+	<!-- العنوان -->
+	<text x="228" y="380" text-anchor="middle" font-family="Arial" font-size="36" font-weight="bold" fill="white">
+		MONITOR
+	</text>
 </svg>
