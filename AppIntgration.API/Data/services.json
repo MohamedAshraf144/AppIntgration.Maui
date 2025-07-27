@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "name": "\uD83C\uDF10 Web Server (Nginx)",
+    "status": "Active",
+    "description": "Frontend web server handling HTTP requests",
+    "createdAt": "2025-06-27T08:05:54.9601747Z",
+    "updatedAt": null
+  },
+  {
+    "id": 2,
+    "name": "\uD83D\uDEAA API Gateway",
+    "status": "Maintenance",
+    "description": "Main API gateway routing requests",
+    "createdAt": "2025-07-02T08:05:54.9601818Z",
+    "updatedAt": "2025-07-27T08:05:56.51859Z"
+  },
+  {
+    "id": 3,
+    "name": "\uD83D\uDD10 Authentication Service",
+    "status": "Active",
+    "description": "User authentication and authorization",
+    "createdAt": "2025-07-07T08:05:54.9601821Z",
+    "updatedAt": null
+  },
+  {
+    "id": 4,
+    "name": "\uD83D\uDCC1 File Upload Service",
+    "status": "Maintenance",
+    "description": "File upload and storage handling",
+    "createdAt": "2025-07-12T08:05:54.9601822Z",
+    "updatedAt": null
+  },
+  {
+    "id": 5,
+    "name": "\uD83D\uDCE7 Email Service",
+    "status": "Error",
+    "description": "Email notifications and messaging",
+    "createdAt": "2025-07-17T08:05:54.9601824Z",
+    "updatedAt": null
+  },
+  {
+    "id": 6,
+    "name": "\u2699\uFE0F Background Jobs",
+    "status": "Active",
+    "description": "Scheduled background tasks",
+    "createdAt": "2025-07-22T08:05:54.9601833Z",
+    "updatedAt": null
+  },
+  {
+    "id": 7,
+    "name": "\uD83D\uDCCA Analytics Service",
+    "status": "Active",
+    "description": "Data analytics and reporting",
+    "createdAt": "2025-07-24T08:05:54.9601835Z",
+    "updatedAt": null
+  },
+  {
+    "id": 8,
+    "name": "\uD83D\uDCBE Cache Service (Redis)",
+    "status": "Active",
+    "description": "In-memory caching system",
+    "createdAt": "2025-07-25T08:05:54.9601836Z",
+    "updatedAt": null
+  }
+]
