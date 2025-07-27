@@ -1,18 +1,234 @@
 [
   {
+    "id": 0,
+    "timestamp": "0001-01-01T00:00:00",
+    "level": "",
+    "message": "",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 0,
+    "timestamp": "0001-01-01T00:00:00",
+    "level": "",
+    "message": "",
+    "source": "",
+    "exception": null
+  },
+  {
     "id": 1,
-    "timestamp": "2025-07-26T22:12:15.3246586Z",
-    "level": "Info",
-    "message": "Service: Health check passed - CPU: 21%",
-    "source": "Authentication Service",
+    "timestamp": "2025-07-27T07:35:40.6456237Z",
+    "level": "Error",
+    "message": ": Network unreachable - retrying in 213s",
+    "source": "",
     "exception": null
   },
   {
     "id": 2,
-    "timestamp": "2025-07-26T22:13:15.3210731Z",
+    "timestamp": "2025-07-27T07:36:40.6493591Z",
+    "level": "Warning",
+    "message": ": High memory usage detected - 84% used",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 3,
+    "timestamp": "2025-07-27T07:37:40.6544516Z",
     "level": "Info",
-    "message": "Jobs: Processing 14 pending requests",
-    "source": "Background Jobs",
+    "message": ": Processing 26 pending requests",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 4,
+    "timestamp": "2025-07-27T07:38:40.6452614Z",
+    "level": "Error",
+    "message": ": Network unreachable - retrying in 236s",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 5,
+    "timestamp": "2025-07-27T07:39:40.6435052Z",
+    "level": "Success",
+    "message": ": Backup completed successfully - 655MB processed",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 6,
+    "timestamp": "2025-07-27T07:40:40.6554323Z",
+    "level": "Info",
+    "message": ": User session established",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 7,
+    "timestamp": "2025-07-27T07:41:40.6543091Z",
+    "level": "Info",
+    "message": ": Configuration reloaded",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 8,
+    "timestamp": "2025-07-27T07:42:40.6428742Z",
+    "level": "Debug",
+    "message": ": Cache hit ratio: 97%",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 9,
+    "timestamp": "2025-07-27T07:43:40.6484819Z",
+    "level": "Info",
+    "message": ": Configuration reloaded",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 10,
+    "timestamp": "2025-07-27T07:44:40.6502559Z",
+    "level": "Info",
+    "message": ": Connection pool size: 18",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 11,
+    "timestamp": "2025-07-27T07:45:40.6467643Z",
+    "level": "Error",
+    "message": ": Request timeout - client disconnected",
+    "source": "",
+    "exception": "System.OutOfMemoryException: Insufficient memory to continue the execution"
+  },
+  {
+    "id": 12,
+    "timestamp": "2025-07-27T07:46:40.6510041Z",
+    "level": "Info",
+    "message": ": Configuration reloaded",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 13,
+    "timestamp": "2025-07-27T07:47:40.656017Z",
+    "level": "Info",
+    "message": ": Configuration reloaded",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 14,
+    "timestamp": "2025-07-27T07:48:40.6496529Z",
+    "level": "Warning",
+    "message": ": Slow response time: 1675ms",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 15,
+    "timestamp": "2025-07-27T07:49:40.6435147Z",
+    "level": "Info",
+    "message": ": User session established",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 16,
+    "timestamp": "2025-07-27T07:50:40.6454672Z",
+    "level": "Info",
+    "message": ": Request processed successfully in 165ms",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 17,
+    "timestamp": "2025-07-27T07:51:40.6438388Z",
+    "level": "Success",
+    "message": ": Certificate renewal completed",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 18,
+    "timestamp": "2025-07-27T07:52:40.6547133Z",
+    "level": "Error",
+    "message": ": File not found: /uploads/e773fe9a-de4a-47a1-9ecd-164e412aa449.tmp",
+    "source": "",
+    "exception": "System.TimeoutException: The operation has timed out"
+  },
+  {
+    "id": 19,
+    "timestamp": "2025-07-27T07:53:40.6436217Z",
+    "level": "Success",
+    "message": ": Maintenance window completed",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 20,
+    "timestamp": "2025-07-27T07:54:40.6407256Z",
+    "level": "Warning",
+    "message": ": Slow response time: 4412ms",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 21,
+    "timestamp": "2025-07-27T07:55:40.6517902Z",
+    "level": "Info",
+    "message": ": Configuration reloaded",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 22,
+    "timestamp": "2025-07-27T07:56:40.6439872Z",
+    "level": "Info",
+    "message": ": Request processed successfully in 332ms",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 23,
+    "timestamp": "2025-07-27T07:57:40.6409954Z",
+    "level": "Info",
+    "message": ": Configuration reloaded",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 24,
+    "timestamp": "2025-07-27T07:58:40.6418618Z",
+    "level": "Warning",
+    "message": ": Queue depth increasing: 122 items",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 25,
+    "timestamp": "2025-07-27T07:59:40.6447978Z",
+    "level": "Warning",
+    "message": ": Connection pool exhaustion warning",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 26,
+    "timestamp": "2025-07-27T08:00:40.6480122Z",
+    "level": "Debug",
+    "message": ": Thread pool stats: 5 active threads",
+    "source": "",
+    "exception": null
+  },
+  {
+    "id": 27,
+    "timestamp": "2025-07-27T08:01:40.655644Z",
+    "level": "Warning",
+    "message": ": Slow response time: 2734ms",
+    "source": "",
     "exception": null
   }
 ]

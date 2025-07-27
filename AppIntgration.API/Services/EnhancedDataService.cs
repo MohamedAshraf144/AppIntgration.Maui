@@ -310,7 +310,27 @@ namespace AppIntgration.API.Services
                     return null;
 
                 var json = File.ReadAllText(filePath);
-                return JsonSerializer.Deserialize<List<ServiceDto>>(json);
+
+                // 🔧 Fixed: Use same serialization options for both save and load
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+
+                var services = JsonSerializer.Deserialize<List<ServiceDto>>(json, options);
+
+                // 🔧 Validate loaded data
+                if (services?.Any() == true && services.All(s => !string.IsNullOrEmpty(s.Name)))
+                {
+                    _logger.LogInformation("Loaded {Count} services from file successfully", services.Count);
+                    return services;
+                }
+
+                // If data is corrupted, delete file and regenerate
+                _logger.LogWarning("Loaded services data appears corrupted, deleting file and regenerating...");
+                File.Delete(filePath);
+                return null;
             }
             catch (Exception ex)
             {
